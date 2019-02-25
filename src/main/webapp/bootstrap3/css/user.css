@@ -1,0 +1,99 @@
+.wrap {
+    width: 980px;
+    margin: 0 auto;
+    border: 0.3px solid #d8d8d8;
+    background: #fff;
+    
+}
+#titleTop{
+	opacity: 0.8;
+	background-color: #F0F8FF;
+	margin-bottom: 10px;
+	
+}
+.menu{
+	background: #f5e6c8;
+    height: 32px;
+    overflow: hidden;
+    display: -webkit-flex; /* 伸缩容器 内容对齐*/
+    justify-content: space-around;
+    padding: 0 20px 0 10px;
+}
+.menu a {
+    color: #6d7c75;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0 19px;
+    display: inline-block;/*行内元素*/
+    border-top: 0px solid #F7F7F7;
+    line-height: 30px;
+}
+.myInfo{
+	padding: 20px 20px 20px 20px;
+    background: #f9f9f9;
+    background-color: #F0F8FF;
+    border-bottom: 1px solid #d8d8d8;/*下边框实线*/
+	height: 170px;
+}
+.user1{
+	 width: 120px;
+     height: 120px;
+     border: 1px solid #ddd;
+     padding: 2px;
+     float: left;/*左浮动*/
+     position: relative;
+}
+.user2{
+	 width: 789px;
+     float: right;/*右浮动*/
+     padding-top: 1px;
+}
+.userMsg{
+	padding-bottom: 5px;
+}
+.name {
+    font-family: "微软雅黑";
+    font-size: 20px;
+    color: #526584;
+}
+.s1{
+	margin-top: 10px;
+}
+.user_edit{
+	color: #526584;
+    float: right;
+    margin-top: 10px;
+}
+.myMenus{
+	float: left;
+    width: 145px;
+     padding-top: 60px;
+}
+ul, ol {
+    list-style: none;
+}
+.myMenus .list li.active {
+    border-left: 2px solid #365060;
+    background: #fff;
+}
+.myMenus .list li {
+    height: 60px;
+    line-height: 60px;
+    overflow: hidden;
+    border-left: 0px solid #e4e8ea;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+    padding-left: 18px;
+    padding-right: 8px;
+}
+ .myMains {
+    background: #fff;
+    width: 833px;
+    float: right;
+    padding: 19px 20px;
+    min-height: 370px;
+}
+.fooler{
+	margin-top: 10px;
+}

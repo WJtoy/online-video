@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.item.dao.BarrageDao">
+     <resultMap type="Barrage" id="BarrageResultUserAndVideo">
+        <id property="id" column="id"></id>
+        <result property="text" column="mu_content"></result>
+        <result property="sendTime" column="sendtime"></result>
+        <result property="usid" column="u_id"></result>
+        <result property="vid" column="c_id" />
+       <!--  指定联合查询出的分类表字段的封装 -->
+	    <association property="us" javaType="com.item.bean.User">
+	    	<id column="id" property="id"/><!-- column代表多方的id对应的属性值 -->
+	    	<result column="username" property="username"/>
+	    	<result column="nickname" property="nickname"/>
+	    </association>
+	     <!--  指定联合查询出的分类表字段的封装 -->
+	    <association property="vi" javaType="com.item.bean.Video">
+	    	<id column="id" property="id"/>
+	    	<result column="coursename" property="coursename"/>
+	    </association>
+    </resultMap>
+    
+     <resultMap type="Barrage" id="BarrageResultUser">
+        <id property="id" column="id"></id>
+        <result property="text" column="mu_content"></result>
+        <result property="sendTime" column="sendtime"></result>
+        <result property="usid" column="u_id"></result>
+        <result property="vid" column="c_id" />
+       <!--  指定联合查询出的分类表字段的封装 -->
+	    <association property="us" javaType="com.item.bean.User">
+	    	<id column="id" property="id"/><!-- column代表多方的id对应的属性值 -->
+	    	<result column="username" property="username"/>
+	    	<result column="nickname" property="nickname"/>
+	    </association>
+    </resultMap>
+    
+     <resultMap type="Barrage" id="BarrageResultVideo">
+        <id property="id" column="id"></id>
+        <result property="text" column="mu_content"></result>
+        <result property="sendTime" column="sendtime"></result>
+        <result property="usid" column="u_id"></result>
+        <result property="vid" column="c_id" />
+      	 <!--  指定联合查询出的分类表字段的封装 -->
+	    <association property="vi" javaType="com.item.bean.Video">
+	    	<id column="id" property="id"/>
+	    	<result column="coursename" property="coursename"/>
+	    	<result column="describe" property="v_describe"/>
+	    </association>
+    </resultMap>
+    
+    
+    
+    <!-- 查询所有视频的信息及用户和弹幕 -->
+    <select id="getBarrageUserAndVideo" parameterType="java.lang.Integer" resultMap="BarrageResultUserAndVideo">
+    	SELECT b.id,b.mu_content,b.sendtime,u.username,u.nickname,c.coursename FROM
+    	 t_barrage b join t_user u ON b.u_id=u.id
+    	  join t_course c on b.c_id=c.id 
+    </select>
+    
+    <select id="getBarrageVideoById" parameterType="java.lang.Integer" resultMap="BarrageResultUserAndVideo">
+    	SELECT b.id,b.mu_content,b.sendtime,u.username,u.nickname,c.coursename FROM
+    	 t_barrage b JOIN t_user u ON b.u_id=u.id
+    	 JOIN t_course c ON b.c_id=c.id where c.id=#{cid}
+    
+    </select>
+    
+    
+    
+    <!-- 根据uid来查用户的弹幕 -->
+    <select id="getBarrage" resultMap="BarrageResultUser"> 
+		SELECT  b.id,b.mu_content,b.sendtime,u.username,u.nickname FROM
+		 t_barrage b join t_user u 
+				  	ON b.u_id=u.id 
+    </select>
+    <!-- 根据视频来查询当前视频的弹幕 -->
+    <select id="getBarrageVi" parameterType="java.lang.Integer" resultMap="BarrageResultUserAndVideo">
+    	SELECT b.id,b.mu_content,b.sendtime,u.username,u.nickname,c.coursename FROM
+    	 t_barrage b JOIN t_user u ON b.u_id=u.id
+    	 JOIN t_course c ON b.c_id=c.id where c.id=#{cid}
+    </select>
+    
+    <insert id="addBarrage" keyProperty="id" useGeneratedKeys="true">
+    	INSERT INTO t_barrage VALUES(null,#{text},#{sendTime},1,#{vid})
+    </insert>
+    
+    <!-- 删除 -->
+  <delete id="deleteBarrage" parameterType="java.lang.Integer">
+    delete from t_barrage where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+   <delete id="deleteBatch">
+     delete from t_barrage  where id in
+	      <foreach  item="ids"  collection="array" open="(" separator=',' close=")">
+	     		 #{ids}
+	      </foreach>
+	</delete>
+	
+	
+	<select id="getBarrageCount" resultMap="BarrageResultVideo">
+		select b.c_id ,count(c_id), c.coursename from t_barrage b join t_course c on b.c_id=c.id
+		  group by b.c_id order by count(c_id) desc limit 7
+	</select>
+
+</mapper>

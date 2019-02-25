@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/><!-- 驼峰命名法 -->
+		 <!-- 对于批量更新操作缓存SQL以提高性能 -->
+        <!-- defaultExecutorType设置为BATCH有个缺陷就是无法获取update、delete返回的行数 -->
+        <!-- <setting name="defaultExecutorType" value="BATCH" /> -->
+        <!-- 是由于defaultExecutorType引起的，defaultExecutorType有三个执行器SIMPLE、REUSE和BATCH。
+      		  其中BATCH可以批量更新操作缓存SQL以提高性能，但是有个缺陷就是无法获取update、delete返回的行数。
+         -->
+	</settings>
+	
+	<typeAliases><!-- 别名  -->
+		<package name="com.item.bean"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+			<!--分页参数合理化  -->
+			<property name="reasonable" value="true"/>
+		</plugin>
+	</plugins>
+
+</configuration>
+

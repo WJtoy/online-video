@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.item.dao.UserDao">
+    <resultMap type="com.item.bean.User" id="UserResult">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="nickname" column="nickname"></result>
+        <result property="password" column="password"></result>
+        <result property="email" column="email"></result>
+        <result property="gender" column="gender"></result>
+        <result property="headimg" column="headimg"></result>
+        <result property="role" column="role"></result>
+        <result property="codeUrl" column="codeurl"/>
+       <!--  <result property="activated" column="activated"/> -->
+    </resultMap>
+    
+    <select id="getUserById" parameterType="Integer" resultMap="UserResult">
+        SELECT * FROM t_user WHERE id=#{id}
+    </select>
+    
+    <select id="getUser" parameterType="String" resultMap="UserResult">
+        SELECT * FROM t_user WHERE username=#{username}
+    </select>
+    
+     <select id="selectByNameAndPwd" resultMap="UserResult">
+        SELECT *
+        FROM t_user
+        WHERE username=#{adminName} and password=#{adminPassword}
+    </select>
+    
+    <insert id="insertSelective" keyProperty="id" parameterType="User" useGeneratedKeys="true">  
+        INSERT INTO t_user VALUES(null,#{username},#{password},#{gender},#{headimg}) 
+    </insert> 
+    
+    
+    <update id="updateByPrimaryKeySelective" parameterType="User">
+    	update t_user
+    <set>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=CHAR},
+      </if>
+      <if test="headimg != null">
+        headimg = #{headimg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <update id="updateByExampleSelective" parameterType="Integer">
+    update t_user
+    <set>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=CHAR},
+      </if>
+      <if test="headimg != null">
+        headimg = #{headimg,jdbcType=VARCHAR},
+      </if>
+       <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+ 	<!-- 查询所有管理用户的信息 -->
+	<select id="showUser" resultMap="UserResult">
+		select id,username,nickname,email,gender from t_user where role=1
+	</select>  
+	<!-- 注销管理用户 -->
+  	<delete id="delUserById" parameterType="java.lang.Integer">
+		delete  from t_user where id = #{id,jdbcType=INTEGER}
+  	</delete>
+  	
+  	
+  	<select id="findUserByEmail" parameterType="java.lang.String" resultType="User">
+		select id,username,nickname,email,gender from t_user where email=#{email}
+  	</select>
+  	
+  	<select id="findUserById" parameterType="java.lang.Integer" resultType="User">
+		select id,username,nickname,email,gender from t_user where id=#{idInt}  	
+  	</select>
+  	
+  	<update id="updateActivated" parameterType="java.lang.Integer">
+  		update t_user<set><if test="activated!=null">activated=#{activated}</if></set>
+  		where id=#{idInt}
+  	</update>
+  	
+  	
+  	<insert id="saveUser" keyProperty="id" parameterType="User" useGeneratedKeys="true" >
+        insert into t_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <!-- <if test="id != null" >
+                id,
+            </if> -->
+            <if test="username!= null" >
+                username,
+            </if>
+            <if test="nickname != null" >
+                nickname,
+            </if>
+            <if test="password != null" >
+                password,
+            </if>
+            <if test="email != null" >
+                email,
+            </if>
+            <if test="gender != null" >
+                gender,
+            </if>
+            <if test="headimg != null" >
+                headimg,
+            </if>
+            <if test="role != null" >
+                role,
+            </if>
+            <if test="codeUrl != null" >
+                codeUrl,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+           <!--  <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if> -->
+            <if test="username != null" >
+                #{username},
+            </if>
+            <if test="nickname != null" >
+                #{nickname},
+            </if>
+            <if test="password != null" >
+                #{password},
+            </if>
+            <if test="email != null" >
+                #{email},
+            </if>
+             <if test="gender != null" >
+                #{gender},
+            </if>
+            <if test="headimg != null" >
+                #{headimg},
+            </if>
+             <if test="role != null" >
+                #{role},
+            </if>
+            <if test="codeUrl != null" >
+                #{codeUrl},
+            </if>
+          </trim>
+    </insert>
+  	
+  	<select id="findUserByActivaed" parameterType="User" resultType="java.lang.Integer">
+  		select activated from t_user where username=#{username} and password=#{password}
+  	</select>
+  	
+  	
+</mapper>

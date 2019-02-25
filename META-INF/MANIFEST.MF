@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ssm-crud
+Bundle-SymbolicName: ssm-crud
+Bundle-Version: 1.0.0.qualifier
+Export-Package: com.item.bean,
+ com.item.controller,
+ com.item.dao,
+ com.item.service,
+ com.item.utils

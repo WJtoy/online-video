@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.item.dao.VideoDao">
+
+    <resultMap type="Video" id="VideoResult">
+        <id property="id" column="id"></id>
+        <result property="coursename" column="coursename"></result>
+        <result property="describe" column="v_describe"></result>
+        <result property="url" column="v_url"></result>
+        <result property="baseadvance" column="base_advance"></result>
+        <result property="uploadtime" column="uploadtime"></result>
+        <result property="cid" column="cid"></result>
+        
+        
+        <!-- 指定联合查询出的分类表字段的封装 -->
+	    <association property="classes" javaType="com.item.bean.Classes">
+		    	<id column="cid" property="id"/>
+		    	<result column="classname" property="classname"/>
+	    	    <result column="fid" property="fid"/>
+	    </association>
+    </resultMap>
+    
+    <!-- 根据id去查视频的所有信息 -->
+    <sql id="WithDept_Column_List_Video">
+  		c.id, c.coursename, c.v_describe, c.v_url,c.base_advance,c.uploadtime
+ 	 </sql>
+ 	 
+    <sql id="WithDept_Column_List">
+  		c.id, c.coursename, c.v_describe, c.v_url,c.base_advance,c.uploadtime, c.cid, cl.id,cl.classname
+ 	 </sql>
+ 	
+ 	 <sql id="WithDept_Column_List_All">
+  		c.id, c.coursename, c.v_describe, c.v_url,c.base_advance,c.uploadtime, c.cid, cl.id,cl.classname
+ 	 </sql>
+    
+    <!-- <select id="getUserById" parameterType="Integer" resultMap="UserResult">
+        SELECT * FROM t_user WHERE id=#{id}
+    </select> -->
+    
+    
+       <!-- 查询视频同时带分类信息 -->
+  <select id="getVideoAll" resultMap="VideoResult">
+	   select
+	    <if test="distinct">
+	      distinct
+	    </if>
+	    <include refid="WithDept_Column_List" />
+			FROM t_course c
+			left join t_classification cl on c.`cid`=cl.`id` ORDER BY c.`id` DESC 
+	    <!-- <if test="_parameter != null">
+	      <include refid="Example_Where_Clause" />
+	    </if> -->
+	   <!--  <if test="orderByClause != null">
+	      order by ${orderByClause}
+	    </if> -->
+  </select>
+    <!-- <select id="getVideo" resultMap="VideoResult">
+        SELECT * FROM t_course
+    </select> -->
+  <select id="getVideo" resultMap="VideoResult">
+   		select 
+  	  <include refid="WithDept_Column_List" />
+  	  FROM  t_course c
+		 join t_classification cl on c.`cid`=cl.`id`
+  		  where c.`id` = #{id,jdbcType=INTEGER}
+  </select>
+    
+    <!--  <select id="selectByNameAndPwd" resultMap="UserResult">
+        SELECT *
+        FROM t_user
+        WHERE username=#{adminName} and password=#{adminPassword}
+    </select> -->
+    
+    <!-- <insert id="add" keyProperty="id" parameterType="Video" useGeneratedKeys="true">  
+        INSERT INTO t_course VALUES(null,#{coursename},#{describe},#{url}) 
+    </insert>  -->
+    
+    <insert id="add" keyProperty="id" parameterType="Video" useGeneratedKeys="true" >
+        insert into t_course
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <!-- <if test="id != null" >
+                id,
+            </if> -->
+            <if test="coursename!= null" >
+                coursename,
+            </if>
+            <if test="describe != null" >
+                v_describe,
+            </if>
+            <if test="url != null" >
+                v_url,
+            </if>
+            <if test="baseadvance != null" >
+                base_advance,
+            </if>
+            <if test="uploadtime != null" >
+                uploadtime,
+            </if>
+            <if test="cid != null" >
+                cid,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+           <!--  <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if> -->
+            <if test="coursename != null" >
+                #{coursename,jdbcType=VARCHAR},
+            </if>
+            <if test="describe != null" >
+                #{describe,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null" >
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="baseadvance != null" >
+                #{baseadvance,jdbcType=INTEGER},
+            </if>
+             <if test="uploadtime != null" >
+                #{uploadtime},
+            </if>
+            <if test="cid != null" >
+                #{cid,jdbcType=INTEGER},
+            </if>
+          </trim>
+    </insert>
+    
+    
+    <update id="updateByPrimaryKeySelective" parameterType="Video">
+  	  update t_course
+    <set>
+      <if test="coursename != null">
+        coursename = #{coursename,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null">
+        v_describe = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        v_url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="baseadvance != null">
+        base_advance = #{baseadvance,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null">
+        cid = #{cid,jdbcType=INTEGER}
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}  
+  </update>
+  
+   <!-- <update id="updateByExampleSelective" parameterType="Integer">
+    update t_user
+    <set>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=CHAR},
+      </if>
+      <if test="headimg != null">
+        headimg = #{headimg,jdbcType=VARCHAR},
+      </if>
+       <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update> -->
+  
+  
+  <!-- 删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_course
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+ <!--  <delete id="deleteByExample" parameterType="">
+    delete from t_course
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete> -->
+  	<delete id="deleteByExample">
+     delete from t_course  where id in
+	      <foreach  item="ids"  collection="array" open="(" separator=',' close=")">
+	     		 #{ids}
+	      </foreach>
+	</delete>
+	
+	
+	<!-- 查询基础进阶部分 -->
+	<select id="getVideoBase" parameterType="Integer" resultMap="VideoResult">
+			select id, coursename,v_describe,v_url,base_advance ,uploadtime 
+						from t_course where base_advance=#{id,jdbcType=INTEGER}
+	</select>
+	
+	
+	<!-- 根据时间,时间重复根据id降序进行排序 -->
+	<select id="timeSort" resultMap="VideoResult">
+		select id,coursename,v_describe,v_url,base_advance,uploadtime 
+					from t_course group by uploadtime desc,id desc limit 4
+	</select>
+	
+	
+	<!-- 查公告栏的最新视频 -->
+	<select id="bulletinBoard" resultMap="VideoResult">
+		select id,coursename,v_describe,v_url,base_advance,uploadtime 
+					from t_course group by uploadtime desc,id desc limit 7
+	</select>
+	
+	<!-- 根据分类id来查该二级分类的视频 -->
+	<select id="getByCidVideo" parameterType="java.lang.Integer"  resultMap="VideoResult">
+		select id ,coursename,v_describe,v_url,base_advance,uploadtime
+			from t_course where cid=#{id}
+	</select>
+  
+  	<select id="getByCidAllVideo" resultMap="VideoResult">
+  		select id ,coursename,v_describe,v_url,base_advance,uploadtime
+  			from t_course where  cid in
+  		<foreach  item="ids"  collection="list" open="(" separator=',' close=")">
+	     		 #{ids}
+	    </foreach> 
+	      <if test="base_advance != null">
+	      	and base_advance =#{base_advance,jdbcType=INTEGER}
+	      </if>
+  	</select>
+  	
+  	<select id="getByCidChildrenVideo" parameterType="java.lang.Integer" resultMap="VideoResult">
+  		select id ,coursename,v_describe,v_url,base_advance,uploadtime
+  			from t_course where cid=#{ids}
+  			<if test="base_advance != null">
+	      		and base_advance =#{base_advance}
+	      	</if>
+  	</select>
+  	
+  	<select id="getBaseAllVideo" parameterType="java.lang.Integer" resultMap="VideoResult">
+  		select id ,coursename,v_describe,v_url,base_advance,uploadtime
+  			from t_course 
+  			<if test="base_advance != null">
+	      		where base_advance =#{base_advance}
+	      	</if>
+  	
+  	</select>
+  	
+  	
+  
+</mapper>

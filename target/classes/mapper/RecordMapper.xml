@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.item.dao.RecordDao">
+	 <resultMap type="com.item.bean.Record" id="RecordResult">
+        <id property="id" column="id"></id>
+        <result property="recordtime" column="recordtime"></result>
+        <result property="uid" column="uid"></result>
+       	<result property="cid" column="c_id"></result>
+           <!-- 指定联合查询出的分类表字段的封装 -->
+	    <!-- <association property="u" javaType="com.item.bean.User">
+		    	<id column="uid" property="id"/>
+		    	<result column="username" property="username"/>
+	    	    <result column="fid" property="fid"/>
+	    </association> -->
+    </resultMap>
+    
+     <resultMap type="com.item.bean.Record" id="RecordResultUser">
+        <id property="id" column="id"></id>
+        <result property="recordtime" column="recordtime"></result>
+        <result property="uid" column="uid"></result>
+       	<result property="cid" column="c_id"></result>
+           <!-- 指定联合查询出的分类表字段的封装 -->
+	    <association property="u" javaType="com.item.bean.User">
+		    	<id column="uid" property="id"/>
+		    	<result column="nickname" property="nickname"/>
+	    </association>
+	    <association property="vi" javaType="com.item.bean.Video">
+		    	<id column="c_id" property="id"/>
+		    	<result column="coursename" property="coursename"/>
+	    	    <result column="v_describe" property="describe"/>
+	    </association>
+    </resultMap>
+    
+    
+    
+
+    <!-- 查询用户记录时间 -->
+    <select id="getRecord" parameterType="Integer" resultMap="RecordResult">
+		select recordtime from t_record where uid=#{id} and cid=#{ids}		    
+    </select>
+		
+    
+    <!-- 插入用户记录时间 -->
+	<insert id="addRecord" keyProperty="id" parameterType="Record" useGeneratedKeys="true">  
+        INSERT INTO t_record VALUES(null,#{recordtime},#{uid},#{cid}) 
+    </insert> 
+
+	<!-- 根据是否已经浏览过得记录进行判断 -->
+	<select id="getUserRecordByCid" parameterType="Integer" resultMap="RecordResult">
+		select id,recordtime,uid,c_id from t_record where c_id=#{cid} and uid=1; 	
+	</select>
+	
+	 <update id="updateUserRecord" parameterType="Record">
+	    	update t_record
+	    <set>
+	      <if test="recordtime != null">
+	        recordtime = #{recordtime},
+	      </if>
+	      <if test="uid != null">
+	        uid = #{uid,jdbcType=INTEGER},
+	      </if>
+	     <!--  <if test="cid != null">
+	        c_id = #{c_id,jdbcType=INTEGER},
+	      </if> -->
+	    </set>
+    		where c_id = #{cid,jdbcType=INTEGER}
+ 	 </update>
+  
+	 <insert id="addUserRecord" keyProperty="id" parameterType="Record" useGeneratedKeys="true" >
+        insert into t_record
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <!-- <if test="id != null" >
+                id,
+            </if> -->
+            <if test="recordtime != null" >
+                recordtime,
+            </if>
+            <if test="uid != null">
+            	uid,
+            </if>
+            <if test="cid != null">
+            	c_id,
+            </if>
+            
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+           <!--  <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if> -->
+            <if test="recordtime != null" >
+                #{recordtime},
+            </if>
+            <if test="uid != null" >
+                #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="cid != null" >
+                #{cid,jdbcType=INTEGER},
+            </if>
+          </trim>
+    </insert>
+    
+    <!-- 清空所有的历史浏览记录 -->
+	 <delete id="deleteRecord" >
+	    delete from t_record
+	  </delete>
+		
+	<!-- 查询用户的浏览历史记录 -->
+	<select id="getRecordByUser" resultMap="RecordResultUser">
+		select r.id,r.recordtime,r.uid,r.c_id,u.nickname,c.id,c.coursename,c.v_describe 
+			from t_record r join t_user u join t_course c
+				on r.uid=u.id and r.c_id=c.id;
+	</select>	
+</mapper>
